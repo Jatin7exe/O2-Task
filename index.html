@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>O2 SABOTAGE: Atmospheric Nomogram Calibration</title>
+  <style>
+    :root {
+      --bg: #07090e;
+      --panel-bg: #0f141c;
+      --card-bg: #151b26;
+      --border: #232d3f;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --cyan: #38bdf8;
+      --yellow: #facc15;
+      --rose: #fb7185;
+      --red: #ef4444;
+      --green: #22c55e;
+      --font-mono: "Courier New", Courier, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    /* Breach Emergency Banner */
+    .banner {
+      width: 100%;
+      max-width: 1100px;
+      background: #380808;
+      border: 2px solid var(--red);
+      color: var(--red);
+      padding: 12px;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      animation: alertPulse 1.2s infinite alternate;
+    }
+
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); border-color: #7f1d1d; }
+      100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.9); border-color: var(--red); }
+    }
+
+    /* Top Command Header */
+    .top-bar {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background: #1e293b;
+      color: var(--cyan);
+      border: 1px solid var(--border);
+      padding: 9px 18px;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    button:hover {
+      background: #334155;
+      border-color: #64748b;
+    }
+
+    #startBtn {
+      background: var(--yellow);
+      color: #000;
+      border-color: #ca8a04;
+    }
+    #startBtn:hover {
+      background: #eab308;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .timer-badge {
+      background: #1e1b4b;
+      border: 1px solid #6366f1;
+      color: #a5b4fc;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 4px;
+    }
+
+    .status-badge {
+      font-size: 0.9rem;
+      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: #111827;
+    }
+    .status-disconnected { color: var(--red); border: 1px solid var(--red); }
+    .status-connected { color: var(--green); border: 1px solid var(--green); }
+
+    /* Main Console Layout */
+    .terminal-container {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--panel-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      position: relative;
+    }
+
+    /* Scenario & Question Prompt */
+    .scenario-box {
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .scenario-title {
+      color: var(--cyan);
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .scenario-desc {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .target-temp-box {
+      background: #1e293b;
+      border: 1px dashed var(--yellow);
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .target-temp-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+    .target-temp-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--yellow);
+    }
+
+    /* Nomogram Canvas Area */
+    .canvas-card {
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      position: relative;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .canvas-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #94a3b8;
+      letter-spacing: 1px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .dot-cyan { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); }
+    .dot-yellow { width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); }
+    .dot-rose { width: 10px; height: 10px; border-radius: 50%; background: var(--rose); }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 380px;
+      background: #06090e;
+      border-radius: 4px;
+    }
+
+    /* Dials Row */
+    .dials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .dial-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .dial-card-title {
+      font-size: 1rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    /* Circular Dial Gauge */
+    .gauge-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 8px 0;
+    }
+
+    .gauge-bezel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, #1a2230 60%, #0d131d 100%);
+      border: 3px solid #334155;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    /* Dial Needle */
+    .needle-pivot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform: translate(-50%, -50%) rotate(-135deg);
+      transition: transform 0.08s ease-out;
+    }
+
+    .needle {
+      position: absolute;
+      bottom: -6px;
+      left: -2px;
+      width: 4px;
+      height: 54px;
+      background: #ffffff;
+      border-radius: 2px 2px 0 0;
+      box-shadow: 0 0 6px rgba(255,255,255,0.8);
+    }
+
+    .needle-cap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      background: #475569;
+      border: 2px solid #94a3b8;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .dial-val-display {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-top: 4px;
+    }
+
+    /* On-Screen Simulator Slider Controls (For Testing Without ESP32) */
+    .test-slider-wrapper {
+      width: 100%;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #273449;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .test-slider-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    input[type="range"] {
+      width: 85%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
+    /* Atmospheric Lock Bar */
+    .hold-container {
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .hold-label {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #94a3b8;
+    }
+
+    .bar-bg {
+      width: 100%;
+      height: 20px;
+      background: #1e293b;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 8px;
+      border: 1px solid #334155;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      transition: width 0.08s linear;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    }
+
+    /* Win Overlay */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(7, 9, 14, 0.96);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      z-index: 20;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .overlay h1 {
+      font-size: 3.2rem;
+      color: var(--green);
+      text-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .dials-grid { grid-template-columns: 1fr; }
+      .scenario-box { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sabotage Header Banner -->
+  <div class="banner" id="alertBanner">
+    CRITICAL SABOTAGE: Oxygen Level of spaceship is breaching
+  </div>
+
+  <div class="top-bar">
+    <div class="btn-group">
+      <button id="startBtn">START TASK</button>
+      <button id="connectBtn">CONNECT ESP32 (USB)</button>
+    </div>
+
+    <div class="header-badges">
+      <div class="timer-badge" id="timerBadge">TIME: 60s</div>
+      <div class="status-badge status-disconnected" id="connStatus">ESP32 DISCONNECTED</div>
+    </div>
+  </div>
+
+  <div class="terminal-container">
+    <!-- Success Victory Overlay -->
+    <div class="overlay" id="winOverlay">
+      <h1>TASK COMPLETED</h1>
+      <button id="nextBtn" style="background: var(--green); color: #000; font-size: 1.1rem; padding: 12px 28px; border: none;">CALIBRATE NEXT SECTOR</button>
+    </div>
+
+    <!-- Active Scenario Details -->
+    <div class="scenario-box">
+      <div>
+        <div class="scenario-title" id="scenarioTitle">MISSION BRIEFING</div>
+        <div class="scenario-desc" id="scenarioDesc">Click "START TASK" to receive emergency hull telemetry. Inspect the nomogram chart at the target temperature to determine the three knob coordinates.</div>
+      </div>
+      <div class="target-temp-box">
+        <div class="target-temp-label">TARGET TEMP</div>
+        <div class="target-temp-val" id="targetTempVal">--°C</div>
+      </div>
+    </div>
+
+    <!-- Nomogram Canvas -->
+    <div class="canvas-card">
+      <div class="canvas-header">
+        <div class="canvas-title">ATMOSPHERIC OPERATING NOMOGRAM (PV = nRT TRACE)</div>
+        <div class="legend">
+          <div class="legend-item"><span class="dot-cyan"></span> O2 (KNOB O)</div>
+          <div class="legend-item"><span class="dot-yellow"></span> N2 (KNOB N)</div>
+          <div class="legend-item"><span class="dot-rose"></span> CO2 (KNOB C)</div>
+        </div>
+      </div>
+      <canvas id="nomogramCanvas" width="1050" height="380"></canvas>
+    </div>
+
+    <!-- Rotary Instrument Dials -->
+    <div class="dials-grid">
+      <!-- Knob O -->
+      <div class="dial-card" id="cardO">
+        <div class="dial-card-title" style="color: var(--cyan);">KNOB O (OXYGEN)</div>
+        <div class="gauge-wrapper">
+          <div class="gauge-bezel">
+            <div class="needle-pivot" id="pivotO">
+              <div class="needle" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></div>
+            </div>
+            <div class="needle-cap"></div>
+          </div>
+        </div>
+        <div class="dial-val-display" id="valO" style="color: var(--cyan);">0</div>
+        <!-- Simulator Slider (Hardware fallback / testing) -->
+        <div class="test-slider-wrapper">
+          <span class="test-slider-label">TEST DIAL (HARDWARE SIM)</span>
+          <input type="range" id="simSliderO" min="0" max="50" value="0" />
+        </div>
+      </div>
+
+      <!-- Knob N -->
+      <div class="dial-card" id="cardN">
+        <div class="dial-card-title" style="color: var(--yellow);">KNOB N (NITROGEN)</div>
+        <div class="gauge-wrapper">
+          <div class="gauge-bezel">
+            <div class="needle-pivot" id="pivotN">
+              <div class="needle" style="background: var(--yellow); box-shadow: 0 0 8px var(--yellow);"></div>
+            </div>
+            <div class="needle-cap"></div>
+          </div>
+        </div>
+        <div class="dial-val-display" id="valN" style="color: var(--yellow);">0</div>
+        <!-- Simulator Slider (Hardware fallback / testing) -->
+        <div class="test-slider-wrapper">
+          <span class="test-slider-label">TEST DIAL (HARDWARE SIM)</span>
+          <input type="range" id="simSliderN" min="0" max="50" value="0" />
+        </div>
+      </div>
+
+      <!-- Knob C -->
+      <div class="dial-card" id="cardC">
+        <div class="dial-card-title" style="color: var(--rose);">KNOB C (CARBON)</div>
+        <div class="gauge-wrapper">
+          <div class="gauge-bezel">
+            <div class="needle-pivot" id="pivotC">
+              <div class="needle" style="background: var(--rose); box-shadow: 0 0 8px var(--rose);"></div>
+            </div>
+            <div class="needle-cap"></div>
+          </div>
+        </div>
+        <div class="dial-val-display" id="valC" style="color: var(--rose);">0</div>
+        <!-- Simulator Slider (Hardware fallback / testing) -->
+        <div class="test-slider-wrapper">
+          <span class="test-slider-label">TEST DIAL (HARDWARE SIM)</span>
+          <input type="range" id="simSliderC" min="0" max="50" value="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Simultaneous Hold Stabilization Bar -->
+    <div class="hold-container">
+      <div class="hold-label">HARMONIC STABILIZATION HOLD: <span id="holdSec">0.0</span> / 1.5s</div>
+      <div class="bar-bg">
+        <div class="bar-fill" id="holdFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ------------------------------------------------------------------
+    // 1. DATASET: Clear Intersections on Multiples of 5
+    // ------------------------------------------------------------------
+    const NOMOGRAM_DATASET = [
+      {
+        id: 1,
+        title: "DEEP SPACE DRIFT: SECTOR 01",
+        desc: "Ship is traversing an asteroid shadow. External temperature dropped to -40°C. Trace -40°C on the chart to read O, N, and C settings.",
+        temp: -40,
+        targets: { O: 45, N: 15, C: 25 }
+      },
+      {
+        id: 2,
+        title: "SUB-ORBITAL RE-ENTRY: SECTOR 02",
+        desc: "Atmospheric friction cooling down to -20°C. Locate -20°C on the X-axis and align the three gas needles with the curves.",
+        temp: -20,
+        targets: { O: 40, N: 20, C: 15 }
+      },
+      {
+        id: 3,
+        title: "STANDARD CRUISING ORBIT: SECTOR 03",
+        desc: "Equatorial orbit achieved at nominal 0°C hull equilibrium. Cross-reference 0°C on the nomogram for baseline life support.",
+        temp: 0,
+        targets: { O: 30, N: 25, C: 10 }
+      },
+      {
+        id: 4,
+        title: "SOLAR PROXIMITY APPROACH: SECTOR 04",
+        desc: "Thermal radiation alert! Hull temperature increased to +20°C. Dilute atmosphere by matching the nomogram curve heights at +20°C.",
+        temp: 20,
+        targets: { O: 20, N: 35, C: 15 }
+      },
+      {
+        id: 5,
+        title: "SOLAR FLARE IMPACT: SECTOR 05",
+        desc: "Shield deflection overloaded! Hull heating peaked at +40°C. Find +40°C on the chart and turn physical knobs to suppress fire hazard.",
+        temp: 40,
+        targets: { O: 15, N: 45, C: 25 }
+      }
+    ];
+
+    // Curve Functions: Perfectly hit (O, N, C) targets at every dataset point
+    // X range: -50 to +50. Y range: 0 to 50
+    function curveO(t) {
+      // Linear downward slope: (-40 -> 45), (40 -> 15)
+      return 30 - 0.375 * t;
+    }
+
+    function curveN(t) {
+      // Linear upward slope: (-40 -> 15), (40 -> 45)
+      return 25 + 0.375 * t;
+    }
+
+    function curveC(t) {
+      // Upward parabola: vertex (0, 10), (±20 -> 15), (±40 -> 25)
+      return 10 + 0.009375 * (t * t);
+    }
+
+    // ------------------------------------------------------------------
+    // 2. STATE MANAGEMENT
+    // ------------------------------------------------------------------
+    let activeQuestion = null;
+    let lastQuestionIdx = -1;
+    let inputs = { O: 0, N: 0, C: 0 };
+    let isTaskActive = false;
+    let isSolved = false;
+
+    let holdDuration = 0;
+    const REQUIRED_HOLD = 1500; // 1.5 seconds hold
+    let lastFrameTime = performance.now();
+
+    let timeLeft = 60;
+    let timerInterval = null;
+
+    // Web Audio Synthesizer for Sirens & Win Fanfare
+    let audioCtx = null;
+    let sirenOsc = null;
+    let sirenGain = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSiren() {
+      if (!audioCtx) return;
+      if (sirenOsc) return;
+
+      sirenOsc = audioCtx.createOscillator();
+      sirenGain = audioCtx.createGain();
+      sirenOsc.type = "sawtooth";
+      sirenOsc.frequency.setValueAtTime(440, audioCtx.currentTime);
+      sirenGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+
+      // Wobble alarm frequency
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.frequency.value = 1.5;
+      lfoGain.gain.value = 120;
+      lfo.connect(sirenOsc.frequency);
+      lfo.start();
+
+      sirenOsc.connect(sirenGain);
+      sirenGain.connect(audioCtx.destination);
+      sirenOsc.start();
+    }
+
+    function stopSiren() {
+      if (sirenOsc) {
+        try { sirenOsc.stop(); } catch(e){}
+        sirenOsc.disconnect();
+        sirenOsc = null;
+      }
+    }
+
+    function playWinSound() {
+      stopSiren();
+      if (!audioCtx) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.12);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.4);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + i * 0.12);
+        osc.stop(audioCtx.currentTime + i * 0.12 + 0.4);
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // 3. NOMOGRAM RENDERER (Clean Ticks, Multiples of 5, Anchor Rings)
+    // ------------------------------------------------------------------
+    const canvas = document.getElementById("nomogramCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const PAD_LEFT = 55;
+    const PAD_RIGHT = 30;
+    const PAD_TOP = 25;
+    const PAD_BOTTOM = 45;
+
+    function toCanvasX(temp) {
+      // temp: -50 to +50
+      const plotW = canvas.width - PAD_LEFT - PAD_RIGHT;
+      return PAD_LEFT + ((temp - (-50)) / 100) * plotW;
+    }
+
+    function toCanvasY(val) {
+      // val: 0 to 50
+      const plotH = canvas.height - PAD_TOP - PAD_BOTTOM;
+      return canvas.height - PAD_BOTTOM - (val / 50) * plotH;
+    }
+
+    function renderNomogram() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const plotW = canvas.width - PAD_LEFT - PAD_RIGHT;
+      const plotH = canvas.height - PAD_TOP - PAD_BOTTOM;
+
+      // Inner background
+      ctx.fillStyle = "#090d14";
+      ctx.fillRect(PAD_LEFT, PAD_TOP, plotW, plotH);
+
+      // Horizontal Grid Lines & Y-Axis Labels (Every 5 units: 0, 5, 10, ... 50)
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.font = "bold 11px Courier New";
+
+      for (let yVal = 0; yVal <= 50; yVal += 5) {
+        const py = toCanvasY(yVal);
+        const isMajor = (yVal % 10 === 0);
+
+        ctx.strokeStyle = isMajor ? "rgba(71, 85, 105, 0.4)" : "rgba(51, 65, 85, 0.2)";
+        ctx.lineWidth = isMajor ? 1.5 : 1;
+
+        ctx.beginPath();
+        ctx.moveTo(PAD_LEFT, py);
+        ctx.lineTo(canvas.width - PAD_RIGHT, py);
+        ctx.stroke();
+
+        ctx.fillStyle = isMajor ? "#cbd5e1" : "#64748b";
+        ctx.fillText(yVal.toString(), PAD_LEFT - 10, py);
+      }
+
+      // Vertical Grid Lines & X-Axis Labels (Every 10°C from -50 to +50)
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+
+      for (let t = -50; t <= 50; t += 5) {
+        const px = toCanvasX(t);
+        const isMajor = (t % 10 === 0);
+
+        ctx.strokeStyle = isMajor ? "rgba(71, 85, 105, 0.4)" : "rgba(51, 65, 85, 0.2)";
+        ctx.lineWidth = isMajor ? 1.5 : 1;
+
+        ctx.beginPath();
+        ctx.moveTo(px, PAD_TOP);
+        ctx.lineTo(px, canvas.height - PAD_BOTTOM);
+        ctx.stroke();
+
+        if (isMajor) {
+          ctx.fillStyle = "#cbd5e1";
+          ctx.fillText((t > 0 ? "+" + t : t) + "°", px, canvas.height - PAD_BOTTOM + 8);
+        }
+      }
+
+      // Axis Borders
+      ctx.strokeStyle = "#475569";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(PAD_LEFT, PAD_TOP, plotW, plotH);
+
+      // Plot the Three Distinct System Curves
+      plotCurve(curveO, "#38bdf8"); // Cyan (O2)
+      plotCurve(curveN, "#facc15"); // Yellow (N2)
+      plotCurve(curveC, "#fb7185"); // Rose (CO2)
+
+      // Plot Calibrated Intersection Anchor Rings (Multiples of 5)
+      const testTemps = [-40, -20, 0, 20, 40];
+      testTemps.forEach(t => {
+        drawAnchorRing(toCanvasX(t), toCanvasY(curveO(t)), "#38bdf8");
+        drawAnchorRing(toCanvasX(t), toCanvasY(curveN(t)), "#facc15");
+        drawAnchorRing(toCanvasX(t), toCanvasY(curveC(t)), "#fb7185");
+      });
+    }
+
+    function plotCurve(formula, strokeColor) {
+      ctx.save();
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 3.5;
+      ctx.shadowColor = strokeColor;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+
+      for (let t = -50; t <= 50; t += 1) {
+        const cx = toCanvasX(t);
+        const cy = toCanvasY(formula(t));
+        if (t === -50) ctx.moveTo(cx, cy);
+        else ctx.lineTo(cx, cy);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawAnchorRing(cx, cy, color) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = "#07090e";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // ------------------------------------------------------------------
+    // 4. DIAL UPDATES (-135° to +135° Needle Sweep for 0 to 50)
+    // ------------------------------------------------------------------
+    function updateDialNeedle(pivotId, valDisplayId, value) {
+      // 0 maps to -135deg, 50 maps to +135deg
+      const angle = -135 + (value / 50) * 270;
+      document.getElementById(pivotId).style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+      document.getElementById(valDisplayId).textContent = Math.round(value);
+    }
+
+    function setDialInputs(o, n, c) {
+      inputs.O = Math.max(0, Math.min(50, o));
+      inputs.N = Math.max(0, Math.min(50, n));
+      inputs.C = Math.max(0, Math.min(50, c));
+
+      updateDialNeedle("pivotO", "valO", inputs.O);
+      updateDialNeedle("pivotN", "valN", inputs.N);
+      updateDialNeedle("pivotC", "valC", inputs.C);
+
+      // Synchronize sliders
+      document.getElementById("simSliderO").value = inputs.O;
+      document.getElementById("simSliderN").value = inputs.N;
+      document.getElementById("simSliderC").value = inputs.C;
+    }
+
+    // ------------------------------------------------------------------
+    // 5. TASK LOGIC & HARMONIC STABILIZATION
+    // ------------------------------------------------------------------
+    function pickRandomTask() {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * NOMOGRAM_DATASET.length);
+      } while (idx === lastQuestionIdx && NOMOGRAM_DATASET.length > 1);
+      lastQuestionIdx = idx;
+      return NOMOGRAM_DATASET[idx];
+    }
+
+    function startTask() {
+      initAudio();
+      activeQuestion = pickRandomTask();
+      isTaskActive = true;
+      isSolved = false;
+      holdDuration = 0;
+
+      // Update UI Briefing
+      document.getElementById("scenarioTitle").textContent = activeQuestion.title;
+      document.getElementById("scenarioDesc").textContent = activeQuestion.desc;
+      document.getElementById("targetTempVal").textContent = (activeQuestion.temp > 0 ? "+" : "") + activeQuestion.temp + "°C";
+
+      // Reset Banners & Overlay
+      const banner = document.getElementById("alertBanner");
+      banner.style.background = "#380808";
+      banner.style.borderColor = "var(--red)";
+      banner.style.color = "var(--red)";
+      banner.textContent = "CRITICAL SABOTAGE: Oxygen Level of spaceship is breaching";
+
+      document.getElementById("winOverlay").classList.remove("active");
+
+      // Reset Countdown
+      clearInterval(timerInterval);
+      timeLeft = 60;
+      document.getElementById("timerBadge").textContent = `TIME: ${timeLeft}s`;
+      timerInterval = setInterval(() => {
+        if (!isSolved && isTaskActive) {
+          timeLeft--;
+          document.getElementById("timerBadge").textContent = `TIME: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            triggerFailure();
+          }
+        }
+      }, 1000);
+
+      playSiren();
+      renderNomogram();
+    }
+
+    function triggerFailure() {
+      stopSiren();
+      isTaskActive = false;
+      const banner = document.getElementById("alertBanner");
+      banner.textContent = "CRITICAL FAILURE: OXYGEN DEPLETED - SPACESHIP BREACHED";
+    }
+
+    function triggerVictory() {
+      isSolved = true;
+      isTaskActive = false;
+      clearInterval(timerInterval);
+      playWinSound();
+
+      const banner = document.getElementById("alertBanner");
+      banner.style.background = "#064e3b";
+      banner.style.borderColor = "var(--green)";
+      banner.style.color = "var(--green)";
+      banner.textContent = "TASK COMPLETED: LIFE SUPPORT ATMOSPHERE STABILIZED";
+
+      document.getElementById("winOverlay").classList.add("active");
+    }
+
+    // Main Evaluation Loop
+    function gameLoop(now) {
+      const dt = now - lastFrameTime;
+      lastFrameTime = now;
+
+      if (isTaskActive && activeQuestion && !isSolved) {
+        // Evaluate all 3 knobs simultaneously within +/- 1 unit tolerance
+        const matchO = Math.abs(inputs.O - activeQuestion.targets.O) <= 1;
+        const matchN = Math.abs(inputs.N - activeQuestion.targets.N) <= 1;
+        const matchC = Math.abs(inputs.C - activeQuestion.targets.C) <= 1;
+
+        if (matchO && matchN && matchC) {
+          holdDuration += dt;
+          if (holdDuration >= REQUIRED_HOLD) {
+            triggerVictory();
+          }
+        } else {
+          // Drain hold meter when any knob falls out of tolerance
+          holdDuration = Math.max(0, holdDuration - dt * 2.5);
+        }
+
+        const pct = Math.min(100, (holdDuration / REQUIRED_HOLD) * 100);
+        document.getElementById("holdFill").style.width = pct + "%";
+        document.getElementById("holdSec").textContent = (holdDuration / 1000).toFixed(1);
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // ------------------------------------------------------------------
+    // 6. HARDWARE WEB SERIAL INTEGRATION (Ready for ESP32)
+    // ------------------------------------------------------------------
+    let serialPort = null;
+    let serialReader = null;
+    let rxAccumulator = "";
+
+    async function connectWebSerial() {
+      initAudio();
+      try {
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+
+        document.getElementById("connStatus").className = "status-badge status-connected";
+        document.getElementById("connStatus").textContent = "ESP32 CONNECTED (115200)";
+        document.getElementById("connectBtn").disabled = true;
+
+        readSerialStream();
+      } catch (err) {
+        console.warn("Serial connection canceled or failed:", err);
+      }
+    }
+
+    async function readSerialStream() {
+      const textDecoder = new TextDecoderStream();
+      serialPort.readable.pipeTo(textDecoder.writable);
+      serialReader = textDecoder.readable.getReader();
+
+      while (true) {
+        const { value, done } = await serialReader.read();
+        if (done) break;
+        if (value) {
+          rxAccumulator += value;
+          const lines = rxAccumulator.split("\n");
+          rxAccumulator = lines.pop(); // Preserve incomplete chunk
+
+          for (const line of lines) {
+            parseHardwareLine(line.trim());
+          }
+        }
+      }
+    }
+
+    function parseHardwareLine(line) {
+      if (!line) return;
+      // Expecting CSV format: "valO,valN,valC" (0-50 mapped)
+      const parts = line.split(",").map(Number);
+      if (parts.length === 3 && !parts.some(isNaN)) {
+        setDialInputs(parts[0], parts[1], parts[2]);
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // 7. EVENT LISTENERS
+    // ------------------------------------------------------------------
+    document.getElementById("startBtn").addEventListener("click", startTask);
+    document.getElementById("nextBtn").addEventListener("click", startTask);
+    document.getElementById("connectBtn").addEventListener("click", connectWebSerial);
+
+    // Fallback Simulator Slider Events
+    document.getElementById("simSliderO").addEventListener("input", (e) => {
+      setDialInputs(parseFloat(e.target.value), inputs.N, inputs.C);
+    });
+    document.getElementById("simSliderN").addEventListener("input", (e) => {
+      setDialInputs(inputs.O, parseFloat(e.target.value), inputs.C);
+    });
+    document.getElementById("simSliderC").addEventListener("input", (e) => {
+      setDialInputs(inputs.O, inputs.N, parseFloat(e.target.value));
+    });
+
+    // Window Resize Redraw
+    window.addEventListener("resize", () => {
+      renderNomogram();
+    });
+
+    // Initialize View
+    renderNomogram();
+    setDialInputs(0, 0, 0);
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>

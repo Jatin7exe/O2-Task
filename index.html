@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>O2 SABOTAGE: Atmospheric Nomogram Calibration</title>
+  <title>O2 LIFE SUPPORT: CONDUIT ROUTING</title>
   <style>
     :root {
       --bg: #07090e;
-      --panel-bg: #0f141c;
-      --card-bg: #151b26;
-      --border: #232d3f;
+      --panel: #0d131f;
+      --card: #141b2b;
+      --border: #232e42;
+      --border-accent: #3b82f6;
       --text: #e2e8f0;
-      --text-muted: #64748b;
+      --text-muted: #8092af;
       --cyan: #38bdf8;
       --yellow: #facc15;
       --rose: #fb7185;
       --red: #ef4444;
       --green: #22c55e;
-      --font-mono: "Courier New", Courier, monospace;
+      --font-mono: "Consolas", "Courier New", Courier, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     * {
@@ -29,252 +31,205 @@
 
     body {
       background-color: var(--bg);
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(30, 58, 102, 0.25) 0%, transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
       color: var(--text);
-      font-family: var(--font-mono);
-      min-height: 100vh;
+      font-family: var(--font-sans);
+      height: 100vh;
+      max-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 16px;
+      padding: 10px 14px;
+      overflow: hidden;
     }
 
-    /* Breach Emergency Banner */
-    .banner {
-      width: 100%;
-      max-width: 1100px;
-      background: #380808;
-      border: 2px solid var(--red);
-      color: var(--red);
-      padding: 12px;
-      text-align: center;
-      font-size: 1.25rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border-radius: 6px;
-      margin-bottom: 14px;
-      animation: alertPulse 1.2s infinite alternate;
-    }
-
-    @keyframes alertPulse {
-      0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); border-color: #7f1d1d; }
-      100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.9); border-color: var(--red); }
-    }
-
-    /* Top Command Header */
-    .top-bar {
-      width: 100%;
-      max-width: 1100px;
+    /* Emergency Alert Header */
+    .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      background: #1e293b;
-      color: var(--cyan);
-      border: 1px solid var(--border);
-      padding: 9px 18px;
-      font-family: var(--font-mono);
-      font-weight: bold;
-      font-size: 0.95rem;
+      background: linear-gradient(180deg, rgba(127, 29, 29, 0.7) 0%, rgba(69, 10, 10, 0.85) 100%);
+      border: 1px solid var(--red);
       border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+      padding: 6px 14px;
+      margin-bottom: 8px;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
+      flex-shrink: 0;
     }
 
-    button:hover {
-      background: #334155;
-      border-color: #64748b;
-    }
-
-    #startBtn {
-      background: var(--yellow);
-      color: #000;
-      border-color: #ca8a04;
-    }
-    #startBtn:hover {
-      background: #eab308;
-    }
-
-    .header-badges {
+    .alert-title {
+      font-weight: 900;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      color: #fca5a5;
+      text-transform: uppercase;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+    }
+
+    .alert-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--red);
+      animation: blink 0.8s infinite alternate;
+    }
+
+    @keyframes blink {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .timer-badge {
-      background: #1e1b4b;
-      border: 1px solid #6366f1;
-      color: #a5b4fc;
-      font-size: 1.1rem;
-      font-weight: bold;
-      padding: 6px 14px;
+      background: #270e1a;
+      border: 1px solid #9f1239;
+      color: #fecdd3;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 4px 12px;
       border-radius: 4px;
+      min-width: 95px;
+      text-align: center;
+    }
+    .timer-badge.critical {
+      background: #7f1d1d;
+      border-color: var(--red);
+      color: #fff;
+      animation: pulse 0.5s infinite alternate;
     }
 
-    .status-badge {
-      font-size: 0.9rem;
-      font-weight: bold;
-      padding: 6px 12px;
-      border-radius: 4px;
-      background: #111827;
+    @keyframes pulse {
+      0% { box-shadow: 0 0 4px var(--red); }
+      100% { box-shadow: 0 0 16px var(--red); }
     }
-    .status-disconnected { color: var(--red); border: 1px solid var(--red); }
-    .status-connected { color: var(--green); border: 1px solid var(--green); }
 
-    /* Main Console Layout */
-    .terminal-container {
-      width: 100%;
-      max-width: 1100px;
-      background: var(--panel-bg);
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
+    button {
+      background: #192233;
+      color: #cbd5e1;
+      border: 1px solid #334361;
+      padding: 5px 12px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    button:hover {
+      background: #243147;
+      color: #fff;
+    }
+
+    #startBtn {
+      background: #ca8a04;
+      color: #000;
+      border-color: #eab308;
+    }
+    #startBtn:hover { background: #eab308; }
+
+    /* 2-Column Split Workspace */
+    .split-container {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      position: relative;
+      grid-template-columns: 340px 1fr;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
     }
 
-    /* Scenario & Question Prompt */
-    .scenario-box {
-      background: #090d14;
+    /* Left Panel: Briefing, Questions, Knob Dials */
+    .left-panel {
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px 18px;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .panel-section-title {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
       display: flex;
       justify-content: space-between;
+    }
+
+    .mission-desc {
+      background: #090e18;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: #94a3b8;
+    }
+    .mission-desc strong { color: #f1f5f9; }
+    .mission-desc span.hl { color: var(--yellow); font-weight: bold; }
+
+    .instructions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+    .inst-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      background: #090e18;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border-left: 3px solid var(--cyan);
+    }
+    .inst-item.yellow { border-left-color: var(--yellow); }
+    .inst-item.rose { border-left-color: var(--rose); }
+
+    /* Knob Dial Cards */
+    .knobs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .knob-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      display: grid;
+      grid-template-columns: 36px 1fr 45px;
       align-items: center;
-      flex-wrap: wrap;
       gap: 10px;
     }
 
-    .scenario-title {
-      color: var(--cyan);
-      font-size: 1.15rem;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .scenario-desc {
-      color: #94a3b8;
-      font-size: 0.95rem;
-    }
-
-    .target-temp-box {
-      background: #1e293b;
-      border: 1px dashed var(--yellow);
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-align: center;
-    }
-    .target-temp-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-    }
-    .target-temp-val {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: var(--yellow);
-    }
-
-    /* Nomogram Canvas Area */
-    .canvas-card {
-      background: #090d14;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px;
-      position: relative;
-    }
-
-    .canvas-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .canvas-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #94a3b8;
-      letter-spacing: 1px;
-    }
-
-    .legend {
-      display: flex;
-      gap: 16px;
-      font-size: 0.85rem;
-      font-weight: bold;
-    }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .dot-cyan { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); }
-    .dot-yellow { width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); }
-    .dot-rose { width: 10px; height: 10px; border-radius: 50%; background: var(--rose); }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: 380px;
-      background: #06090e;
-      border-radius: 4px;
-    }
-
-    /* Dials Row */
-    .dials-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .dial-card {
-      background: var(--card-bg);
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-
-    .dial-card-title {
-      font-size: 1rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-
-    /* Circular Dial Gauge */
-    .gauge-wrapper {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      margin: 8px 0;
-    }
-
-    .gauge-bezel {
-      width: 100%;
-      height: 100%;
+    .knob-circle {
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      background: radial-gradient(circle, #1a2230 60%, #0d131d 100%);
-      border: 3px solid #334155;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
+      background: radial-gradient(circle, #1a2333 60%, #0d121c 100%);
+      border: 1.5px solid #2e3c54;
       position: relative;
     }
-
-    /* Dial Needle */
-    .needle-pivot {
+    .knob-needle {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -283,319 +238,555 @@
       transform: translate(-50%, -50%) rotate(-135deg);
       transition: transform 0.08s ease-out;
     }
-
-    .needle {
+    .needle-line {
       position: absolute;
-      bottom: -6px;
-      left: -2px;
-      width: 4px;
-      height: 54px;
-      background: #ffffff;
-      border-radius: 2px 2px 0 0;
-      box-shadow: 0 0 6px rgba(255,255,255,0.8);
+      bottom: -2px;
+      left: -1px;
+      width: 2px;
+      height: 14px;
+      border-radius: 1px;
+      background: #fff;
     }
 
-    .needle-cap {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 16px;
-      height: 16px;
-      background: #475569;
-      border: 2px solid #94a3b8;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .dial-val-display {
-      font-size: 2.2rem;
-      font-weight: 900;
-      margin-top: 4px;
-    }
-
-    /* On-Screen Simulator Slider Controls (For Testing Without ESP32) */
-    .test-slider-wrapper {
-      width: 100%;
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid #273449;
+    .knob-info {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      gap: 2px;
     }
-
-    .test-slider-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 1px;
+    .knob-label {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
     }
-
     input[type="range"] {
-      width: 85%;
+      width: 100%;
+      height: 3px;
       accent-color: var(--cyan);
       cursor: pointer;
     }
 
-    /* Atmospheric Lock Bar */
-    .hold-container {
-      background: #090d14;
+    .knob-val {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    /* Right Panel: Large Clean Maze */
+    .right-panel {
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px;
-      text-align: center;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 0;
     }
 
-    .hold-label {
-      font-size: 0.95rem;
-      font-weight: bold;
-      color: #94a3b8;
+    .maze-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 6px 6px 6px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
     }
 
-    .bar-bg {
+    .legend-bar {
+      display: flex;
+      gap: 14px;
+    }
+    .legend-tag {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+    }
+    .tag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .canvas-wrap {
+      flex: 1;
       width: 100%;
-      height: 20px;
-      background: #1e293b;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 8px;
-      border: 1px solid #334155;
-    }
-
-    .bar-fill {
       height: 100%;
-      width: 0%;
-      background: var(--green);
-      transition: width 0.08s linear;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+      position: relative;
+      min-height: 0;
     }
 
-    /* Win Overlay */
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #04060a;
+      border-radius: 6px;
+    }
+
+    /* Win / Failure Overlay */
     .overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(7, 9, 14, 0.96);
+      background: rgba(7, 9, 14, 0.95);
       display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       border-radius: 8px;
-      z-index: 20;
+      z-index: 50;
+      backdrop-filter: blur(6px);
     }
-
-    .overlay.active {
-      display: flex;
-    }
-
+    .overlay.active { display: flex; }
     .overlay h1 {
-      font-size: 3.2rem;
+      font-size: 2.8rem;
+      font-family: var(--font-mono);
       color: var(--green);
-      text-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
-      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+      margin-bottom: 12px;
     }
-
-    @media (max-width: 768px) {
-      .dials-grid { grid-template-columns: 1fr; }
-      .scenario-box { flex-direction: column; align-items: flex-start; }
+    .overlay.failed h1 {
+      color: var(--red);
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
     }
   </style>
 </head>
 <body>
 
-  <!-- Sabotage Header Banner -->
-  <div class="banner" id="alertBanner">
-    CRITICAL SABOTAGE: Oxygen Level of spaceship is breaching
-  </div>
-
-  <div class="top-bar">
-    <div class="btn-group">
-      <button id="startBtn">START TASK</button>
-      <button id="connectBtn">CONNECT ESP32 (USB)</button>
+  <div class="top-header">
+    <div class="alert-title">
+      <span class="alert-dot"></span>
+      CRITICAL SABOTAGE: Atmospheric Life Support Manifold Breached
     </div>
-
-    <div class="header-badges">
-      <div class="timer-badge" id="timerBadge">TIME: 60s</div>
-      <div class="status-badge status-disconnected" id="connStatus">ESP32 DISCONNECTED</div>
+    <div class="header-controls">
+      <div class="timer-badge" id="timerBadge">TIME: 90s</div>
+      <button id="cycleBtn">CYCLE SECTOR</button>
+      <button id="startBtn">START / RESET</button>
+      <button id="connectBtn">CONNECT ESP32</button>
     </div>
   </div>
 
-  <div class="terminal-container">
-    <!-- Success Victory Overlay -->
-    <div class="overlay" id="winOverlay">
-      <h1>TASK COMPLETED</h1>
-      <button id="nextBtn" style="background: var(--green); color: #000; font-size: 1.1rem; padding: 12px 28px; border: none;">CALIBRATE NEXT SECTOR</button>
-    </div>
+  <div class="split-container">
 
-    <!-- Active Scenario Details -->
-    <div class="scenario-box">
-      <div>
-        <div class="scenario-title" id="scenarioTitle">MISSION BRIEFING</div>
-        <div class="scenario-desc" id="scenarioDesc">Click "START TASK" to receive emergency hull telemetry. Inspect the nomogram chart at the target temperature to determine the three knob coordinates.</div>
+    <!-- LEFT PANEL: Instructions & Knobs -->
+    <div class="left-panel">
+      <div class="panel-section-title">
+        <span>MISSION TELEMETRY</span>
+        <span id="sectorCode" style="color:var(--yellow)">SECTOR 01</span>
       </div>
-      <div class="target-temp-box">
-        <div class="target-temp-label">TARGET TEMP</div>
-        <div class="target-temp-val" id="targetTempVal">--°C</div>
-      </div>
-    </div>
 
-    <!-- Nomogram Canvas -->
-    <div class="canvas-card">
-      <div class="canvas-header">
-        <div class="canvas-title">ATMOSPHERIC OPERATING NOMOGRAM (PV = nRT TRACE)</div>
-        <div class="legend">
-          <div class="legend-item"><span class="dot-cyan"></span> O2 (KNOB O)</div>
-          <div class="legend-item"><span class="dot-yellow"></span> N2 (KNOB N)</div>
-          <div class="legend-item"><span class="dot-rose"></span> CO2 (KNOB C)</div>
+      <div class="mission-desc">
+        Ruptured bulkheads triggered containment lockdown. Trace the <span class="hl">single continuous unblocked path</span> from the green <strong>START CORE</strong> to terminal outputs <strong>O</strong>, <strong>N</strong>, and <strong>C</strong>.
+        <br/><br/>
+        Sum the numbered flow-coins along each valid line and dial the physical knobs to match the total. <strong>Avoid paths leading to red blast gates (X).</strong>
+      </div>
+
+      <div class="instructions-list">
+        <div class="inst-item">
+          <div><b>NODE O (Oxygen):</b> Sum valves along the open route to blue terminal.</div>
+        </div>
+        <div class="inst-item yellow">
+          <div><b>NODE N (Nitrogen):</b> Sum valves along the open route to yellow terminal.</div>
+        </div>
+        <div class="inst-item rose">
+          <div><b>NODE C (Carbon):</b> Sum valves along the open route to rose terminal.</div>
         </div>
       </div>
-      <canvas id="nomogramCanvas" width="1050" height="380"></canvas>
-    </div>
 
-    <!-- Rotary Instrument Dials -->
-    <div class="dials-grid">
-      <!-- Knob O -->
-      <div class="dial-card" id="cardO">
-        <div class="dial-card-title" style="color: var(--cyan);">KNOB O (OXYGEN)</div>
-        <div class="gauge-wrapper">
-          <div class="gauge-bezel">
-            <div class="needle-pivot" id="pivotO">
-              <div class="needle" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></div>
-            </div>
-            <div class="needle-cap"></div>
+      <div class="knobs-container">
+        <div class="panel-section-title">HARDWARE POTENTIOMETERS</div>
+
+        <div class="knob-row">
+          <div class="knob-circle">
+            <div class="knob-needle" id="needleO"><div class="needle-line" style="background:var(--cyan)"></div></div>
           </div>
-        </div>
-        <div class="dial-val-display" id="valO" style="color: var(--cyan);">0</div>
-        <!-- Simulator Slider (Hardware fallback / testing) -->
-        <div class="test-slider-wrapper">
-          <span class="test-slider-label">TEST DIAL (HARDWARE SIM)</span>
-          <input type="range" id="simSliderO" min="0" max="50" value="0" />
-        </div>
-      </div>
-
-      <!-- Knob N -->
-      <div class="dial-card" id="cardN">
-        <div class="dial-card-title" style="color: var(--yellow);">KNOB N (NITROGEN)</div>
-        <div class="gauge-wrapper">
-          <div class="gauge-bezel">
-            <div class="needle-pivot" id="pivotN">
-              <div class="needle" style="background: var(--yellow); box-shadow: 0 0 8px var(--yellow);"></div>
-            </div>
-            <div class="needle-cap"></div>
+          <div class="knob-info">
+            <div class="knob-label" style="color:var(--cyan)">KNOB O (OXYGEN)</div>
+            <input type="range" id="sliderO" min="0" max="50" value="0" />
           </div>
+          <div class="knob-val" id="valO" style="color:var(--cyan)">0</div>
         </div>
-        <div class="dial-val-display" id="valN" style="color: var(--yellow);">0</div>
-        <!-- Simulator Slider (Hardware fallback / testing) -->
-        <div class="test-slider-wrapper">
-          <span class="test-slider-label">TEST DIAL (HARDWARE SIM)</span>
-          <input type="range" id="simSliderN" min="0" max="50" value="0" />
-        </div>
-      </div>
 
-      <!-- Knob C -->
-      <div class="dial-card" id="cardC">
-        <div class="dial-card-title" style="color: var(--rose);">KNOB C (CARBON)</div>
-        <div class="gauge-wrapper">
-          <div class="gauge-bezel">
-            <div class="needle-pivot" id="pivotC">
-              <div class="needle" style="background: var(--rose); box-shadow: 0 0 8px var(--rose);"></div>
-            </div>
-            <div class="needle-cap"></div>
+        <div class="knob-row">
+          <div class="knob-circle">
+            <div class="knob-needle" id="needleN"><div class="needle-line" style="background:var(--yellow)"></div></div>
           </div>
+          <div class="knob-info">
+            <div class="knob-label" style="color:var(--yellow)">KNOB N (NITROGEN)</div>
+            <input type="range" id="sliderN" min="0" max="50" value="0" />
+          </div>
+          <div class="knob-val" id="valN" style="color:var(--yellow)">0</div>
         </div>
-        <div class="dial-val-display" id="valC" style="color: var(--rose);">0</div>
-        <!-- Simulator Slider (Hardware fallback / testing) -->
-        <div class="test-slider-wrapper">
-          <span class="test-slider-label">TEST DIAL (HARDWARE SIM)</span>
-          <input type="range" id="simSliderC" min="0" max="50" value="0" />
+
+        <div class="knob-row">
+          <div class="knob-circle">
+            <div class="knob-needle" id="needleC"><div class="needle-line" style="background:var(--rose)"></div></div>
+          </div>
+          <div class="knob-info">
+            <div class="knob-label" style="color:var(--rose)">KNOB C (CARBON)</div>
+            <input type="range" id="sliderC" min="0" max="50" value="0" />
+          </div>
+          <div class="knob-val" id="valC" style="color:var(--rose)">0</div>
         </div>
       </div>
     </div>
 
-    <!-- Simultaneous Hold Stabilization Bar -->
-    <div class="hold-container">
-      <div class="hold-label">HARMONIC STABILIZATION HOLD: <span id="holdSec">0.0</span> / 1.5s</div>
-      <div class="bar-bg">
-        <div class="bar-fill" id="holdFill"></div>
+    <!-- RIGHT PANEL: Full Maze View -->
+    <div class="right-panel">
+      <div class="overlay" id="statusOverlay">
+        <h1 id="overlayTitle">TASK COMPLETED</h1>
+        <button id="nextSectorBtn" style="background:var(--green); color:#000; font-size:0.95rem; font-weight:800; padding:8px 20px;">CALIBRATE NEXT SECTOR</button>
+      </div>
+
+      <div class="maze-header">
+        <span id="mazeName">PRIMARY MANIFOLD DUCT TOPOLOGY</span>
+        <div class="legend-bar">
+          <div class="legend-tag"><span class="tag-dot" style="background:var(--green)"></span> START</div>
+          <div class="legend-tag"><span class="tag-dot" style="background:var(--cyan)"></span> NODE O</div>
+          <div class="legend-tag"><span class="tag-dot" style="background:var(--yellow)"></span> NODE N</div>
+          <div class="legend-tag"><span class="tag-dot" style="background:var(--rose)"></span> NODE C</div>
+          <div class="legend-tag"><span class="tag-dot" style="background:var(--red)"></span> GATE (X)</div>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="mazeCanvas" width="1400" height="700"></canvas>
       </div>
     </div>
+
   </div>
 
   <script>
     // ------------------------------------------------------------------
-    // 1. DATASET: Clear Intersections on Multiples of 5
+    // 1. DATASETS: 5 LABYRINTHS (SECTOR 02 SPACING COMPLETELY RESOLVED)
     // ------------------------------------------------------------------
-    const NOMOGRAM_DATASET = [
+    const LABYRINTHS = [
+      // --------------------------------------------------------------
+      // SECTOR 01: ALPHA
+      // --------------------------------------------------------------
       {
         id: 1,
-        title: "DEEP SPACE DRIFT: SECTOR 01",
-        desc: "Ship is traversing an asteroid shadow. External temperature dropped to -40°C. Trace -40°C on the chart to read O, N, and C settings.",
-        temp: -40,
-        targets: { O: 45, N: 15, C: 25 }
+        code: "SECTOR 01 [ALPHA]",
+        desc: "Tri-Level Grid: Interlaced bypass conduits with deep decoy spurs.",
+        targets: { O: 40, N: 30, C: 45 },
+        nodes: {
+          START: { x: 90, y: 350, label: "START", sub: "CORE", type: "start" },
+          O: { x: 1310, y: 110, label: "NODE O", sub: "CYAN", type: "endO" },
+          N: { x: 1310, y: 350, label: "NODE N", sub: "YELLOW", type: "endN" },
+          C: { x: 1310, y: 590, label: "NODE C", sub: "ROSE", type: "endC" }
+        },
+        segments: [
+          [[90, 350], [180, 350], [180, 180], [290, 180]],
+          [[180, 350], [290, 350]],
+          [[180, 350], [180, 520], [290, 520]],
+          [[290, 180], [290, 90], [480, 90], [480, 200], [640, 200], [640, 90], [890, 90], [890, 180], [1080, 180], [1080, 90], [1200, 90], [1200, 110], [1310, 110]],
+          [[290, 350], [430, 350], [430, 420], [610, 420], [610, 320], [810, 320], [810, 390], [1000, 390], [1000, 350], [1210, 350], [1310, 350]],
+          [[290, 520], [290, 610], [510, 610], [510, 520], [680, 520], [680, 615], [920, 615], [920, 525], [1130, 525], [1130, 610], [1240, 610], [1240, 590], [1310, 590]],
+          [[480, 90], [570, 90], [570, 170]],
+          [[640, 200], [640, 280], [740, 280]],
+          [[890, 90], [980, 90], [980, 150]],
+          [[1080, 180], [1170, 180], [1170, 250]],
+          [[290, 350], [290, 260], [400, 260]],
+          [[430, 420], [430, 490]],
+          [[610, 320], [610, 230], [710, 230]],
+          [[810, 390], [810, 470]],
+          [[1000, 350], [1000, 250]],
+          [[1210, 350], [1210, 250]],
+          [[510, 610], [590, 610], [590, 660]],
+          [[680, 520], [680, 430], [780, 430]],
+          [[920, 615], [1030, 615], [1030, 670]],
+          [[1130, 525], [1130, 440]]
+        ],
+        valves: [
+          { x: 385, y: 90, val: 10 },
+          { x: 765, y: 90, val: 10 },
+          { x: 1140, y: 90, val: 15 },
+          { x: 520, y: 420, val: 10 },
+          { x: 710, y: 320, val: 10 },
+          { x: 1105, y: 350, val: 10 },
+          { x: 400, y: 610, val: 15 },
+          { x: 800, y: 615, val: 10 },
+          { x: 1210, y: 610, val: 20 },
+          { x: 570, y: 115, val: 15 },
+          { x: 670, y: 280, val: 10 },
+          { x: 330, y: 260, val: 10 },
+          { x: 640, y: 230, val: 20 },
+          { x: 715, y: 430, val: 15 },
+          { x: 960, y: 615, val: 10 }
+        ],
+        gates: [
+          { x: 570, y: 170 }, { x: 740, y: 280 }, { x: 980, y: 150 }, { x: 1170, y: 250 },
+          { x: 400, y: 260 }, { x: 430, y: 490 }, { x: 710, y: 230 }, { x: 810, y: 470 },
+          { x: 1000, y: 250 }, { x: 1210, y: 250 }, { x: 590, y: 660 }, { x: 780, y: 430 },
+          { x: 1030, y: 670 }, { x: 1130, y: 440 }
+        ]
       },
+
+      // --------------------------------------------------------------
+      // SECTOR 02: BETA (CLEANED SPACING: NO BLEND, NO MERGED LINES)
+      // --------------------------------------------------------------
       {
         id: 2,
-        title: "SUB-ORBITAL RE-ENTRY: SECTOR 02",
-        desc: "Atmospheric friction cooling down to -20°C. Locate -20°C on the X-axis and align the three gas needles with the curves.",
-        temp: -20,
-        targets: { O: 40, N: 20, C: 15 }
+        code: "SECTOR 02 [BETA]",
+        desc: "Serpentine Loops: Triple undulating manifolds across decks.",
+        targets: { O: 45, N: 35, C: 30 },
+        nodes: {
+          START: { x: 90, y: 350, label: "START", sub: "CORE", type: "start" },
+          O: { x: 1310, y: 110, label: "NODE O", sub: "CYAN", type: "endO" },
+          N: { x: 1310, y: 350, label: "NODE N", sub: "YELLOW", type: "endN" },
+          C: { x: 1310, y: 590, label: "NODE C", sub: "ROSE", type: "endC" }
+        },
+        segments: [
+          // Route O (15 + 15 + 15 = 45)
+          [[90, 350], [170, 350], [170, 115], [320, 115], [320, 240], [500, 240], [500, 115], [710, 115], [710, 235], [930, 235], [930, 115], [1150, 115], [1150, 200], [1230, 200], [1230, 110], [1310, 110]],
+
+          // Route N (10 + 10 + 15 = 35)
+          // Cleaned center line with 80px gap from the top loop drop
+          [[170, 350], [350, 350], [350, 440], [560, 440], [560, 340], [790, 340], [790, 440], [970, 440], [970, 340], [1180, 340], [1180, 420], [1240, 420], [1240, 350], [1310, 350]],
+
+          // Route C (10 + 10 + 10 = 30)
+          // Lead-in to NODE C clearly isolated from the drop gate
+          [[170, 350], [170, 585], [340, 585], [340, 490], [520, 490], [520, 590], [740, 590], [740, 505], [980, 505], [980, 590], [1170, 590], [1170, 520], [1230, 520], [1230, 590], [1310, 590]],
+
+          // Clear, widely-separated decoy branches:
+          [[320, 115], [430, 115], [430, 190]],
+          [[500, 240], [500, 300], [610, 300]],
+          // Fixed Center-Left spur: placed at X=840 with 70px clearance from X=790
+          [[710, 115], [840, 115], [840, 190]],
+          [[930, 235], [930, 310]],
+          [[1150, 115], [1190, 115]],
+          [[350, 350], [350, 270]],
+          [[560, 440], [560, 530], [640, 530]],
+          // Fixed Center drop: X=740 connects down, clear of everything
+          [[790, 340], [740, 340], [740, 255]],
+          [[970, 440], [970, 530]],
+          [[1180, 340], [1180, 250], [1250, 250]],
+          [[340, 585], [430, 585], [430, 655]],
+          [[520, 490], [520, 420]],
+          [[740, 590], [840, 590], [840, 660]],
+          [[980, 505], [980, 425], [1080, 425]],
+          // Fixed NODE C drop gate: moved left to X=1100, leaving X=1230/1310 wide open!
+          [[1170, 590], [1100, 590], [1100, 660]]
+        ],
+        valves: [
+          // True paths
+          { x: 245, y: 115, val: 15 }, { x: 605, y: 115, val: 15 }, { x: 1040, y: 115, val: 15 },
+          { x: 445, y: 440, val: 10 }, { x: 880, y: 340, val: 10 }, { x: 1075, y: 340, val: 15 },
+          { x: 255, y: 585, val: 10 }, { x: 630, y: 590, val: 10 }, { x: 1075, y: 590, val: 10 },
+          // Decoys
+          { x: 430, y: 135, val: 10 },
+          { x: 535, y: 300, val: 15 },
+          { x: 575, y: 530, val: 10 },
+          { x: 740, y: 285, val: 15 },
+          { x: 840, y: 140, val: 15 },
+          { x: 1180, y: 280, val: 10 }
+        ],
+        gates: [
+          { x: 430, y: 190 }, { x: 610, y: 300 }, { x: 840, y: 190 }, { x: 930, y: 310 }, { x: 1190, y: 115 },
+          { x: 350, y: 270 }, { x: 640, y: 530 }, { x: 740, y: 255 }, { x: 970, y: 530 }, { x: 1250, y: 250 },
+          { x: 430, y: 655 }, { x: 520, y: 420 }, { x: 840, y: 660 }, { x: 1080, y: 425 },
+          // Relocated clearly away from NODE C:
+          { x: 1100, y: 660 }
+        ]
       },
+
+      // --------------------------------------------------------------
+      // SECTOR 03: GAMMA
+      // --------------------------------------------------------------
       {
         id: 3,
-        title: "STANDARD CRUISING ORBIT: SECTOR 03",
-        desc: "Equatorial orbit achieved at nominal 0°C hull equilibrium. Cross-reference 0°C on the nomogram for baseline life support.",
-        temp: 0,
-        targets: { O: 30, N: 25, C: 10 }
+        code: "SECTOR 03 [GAMMA]",
+        desc: "Catwalk Bypass: High-altitude conduit with deep subfloor trenches.",
+        targets: { O: 50, N: 25, C: 35 },
+        nodes: {
+          START: { x: 90, y: 350, label: "START", sub: "CORE", type: "start" },
+          O: { x: 1310, y: 110, label: "NODE O", sub: "CYAN", type: "endO" },
+          N: { x: 1310, y: 350, label: "NODE N", sub: "YELLOW", type: "endN" },
+          C: { x: 1310, y: 590, label: "NODE C", sub: "ROSE", type: "endC" }
+        },
+        segments: [
+          [[90, 350], [160, 350], [160, 85], [460, 85], [460, 170], [680, 170], [680, 85], [1000, 85], [1000, 170], [1210, 170], [1210, 90], [1260, 90], [1260, 110], [1310, 110]],
+          [[160, 350], [330, 350], [430, 270], [660, 270], [760, 350], [930, 350], [1030, 425], [1210, 425], [1260, 350], [1310, 350]],
+          [[160, 350], [160, 615], [450, 615], [450, 525], [670, 525], [670, 620], [970, 620], [970, 530], [1190, 530], [1190, 615], [1260, 615], [1260, 590], [1310, 590]],
+          [[460, 85], [590, 85], [590, 160]],
+          [[680, 170], [680, 245]],
+          [[1000, 85], [1110, 85], [1110, 160]],
+          [[1210, 170], [1210, 245]],
+          [[330, 350], [330, 450], [410, 450]],
+          [[430, 270], [430, 195]],
+          [[660, 270], [660, 195], [750, 195]],
+          [[760, 350], [760, 435]],
+          [[930, 350], [930, 260]],
+          [[1210, 425], [1210, 510]],
+          [[450, 615], [570, 615], [570, 675]],
+          [[670, 525], [670, 440]],
+          [[970, 620], [1080, 620], [1080, 675]],
+          [[1190, 530], [1190, 445], [1270, 445]]
+        ],
+        valves: [
+          { x: 310, y: 85, val: 15 }, { x: 840, y: 85, val: 15 }, { x: 1105, y: 170, val: 20 },
+          { x: 545, y: 270, val: 10 }, { x: 1120, y: 425, val: 15 },
+          { x: 305, y: 615, val: 10 }, { x: 820, y: 620, val: 10 }, { x: 1080, y: 530, val: 15 },
+          { x: 540, y: 85, val: 15 },
+          { x: 350, y: 450, val: 10 },
+          { x: 700, y: 195, val: 15 },
+          { x: 930, y: 310, val: 10 },
+          { x: 1070, y: 85, val: 10 },
+          { x: 1220, y: 445, val: 15 }
+        ],
+        gates: [
+          { x: 590, y: 160 }, { x: 680, y: 245 }, { x: 1110, y: 160 }, { x: 1210, y: 245 },
+          { x: 410, y: 450 }, { x: 430, y: 195 }, { x: 750, y: 195 }, { x: 760, y: 435 },
+          { x: 930, y: 260 }, { x: 1210, y: 510 }, { x: 570, y: 675 }, { x: 670, y: 440 },
+          { x: 1080, y: 675 }, { x: 1270, y: 445 }
+        ]
       },
+
+      // --------------------------------------------------------------
+      // SECTOR 04: DELTA
+      // --------------------------------------------------------------
       {
         id: 4,
-        title: "SOLAR PROXIMITY APPROACH: SECTOR 04",
-        desc: "Thermal radiation alert! Hull temperature increased to +20°C. Dilute atmosphere by matching the nomogram curve heights at +20°C.",
-        temp: 20,
-        targets: { O: 20, N: 35, C: 15 }
+        code: "SECTOR 04 [DELTA]",
+        desc: "Diamond Lattice: Cross-angled corridors passing through core.",
+        targets: { O: 35, N: 45, C: 25 },
+        nodes: {
+          START: { x: 90, y: 350, label: "START", sub: "CORE", type: "start" },
+          O: { x: 1310, y: 110, label: "NODE O", sub: "CYAN", type: "endO" },
+          N: { x: 1310, y: 350, label: "NODE N", sub: "YELLOW", type: "endN" },
+          C: { x: 1310, y: 590, label: "NODE C", sub: "ROSE", type: "endC" }
+        },
+        segments: [
+          [[90, 350], [210, 350], [320, 170], [510, 170], [640, 250], [830, 250], [930, 145], [1160, 145], [1240, 90], [1270, 90], [1270, 110], [1310, 110]],
+          [[210, 350], [390, 350], [490, 440], [710, 440], [810, 350], [1030, 350], [1130, 425], [1250, 425], [1270, 350], [1310, 350]],
+          [[210, 350], [320, 545], [560, 545], [660, 630], [920, 630], [1040, 545], [1220, 545], [1260, 605], [1310, 605], [1310, 590]],
+          [[510, 170], [510, 85], [610, 85]],
+          [[640, 250], [640, 325]],
+          [[830, 250], [830, 165], [910, 165]],
+          [[930, 145], [930, 75]],
+          [[1160, 145], [1160, 225]],
+          [[390, 350], [390, 260], [490, 260]],
+          [[490, 440], [490, 520]],
+          [[710, 440], [710, 520], [800, 520]],
+          [[810, 350], [810, 265]],
+          [[1030, 350], [1030, 260]],
+          [[1130, 425], [1130, 505]],
+          [[320, 545], [320, 635], [430, 635]],
+          [[560, 545], [560, 470]],
+          [[660, 630], [660, 675]],
+          [[920, 630], [1010, 630], [1010, 675]],
+          [[1040, 545], [1040, 465]],
+          [[1220, 545], [1220, 465]]
+        ],
+        valves: [
+          { x: 420, y: 170, val: 10 }, { x: 735, y: 250, val: 10 }, { x: 1050, y: 145, val: 15 },
+          { x: 300, y: 350, val: 15 }, { x: 600, y: 440, val: 15 }, { x: 920, y: 350, val: 15 },
+          { x: 440, y: 545, val: 10 }, { x: 800, y: 630, val: 15 },
+          { x: 550, y: 85, val: 15 },
+          { x: 430, y: 260, val: 10 },
+          { x: 745, y: 520, val: 20 },
+          { x: 365, y: 635, val: 15 },
+          { x: 865, y: 165, val: 10 },
+          { x: 1220, y: 510, val: 10 }
+        ],
+        gates: [
+          { x: 610, y: 85 }, { x: 640, y: 325 }, { x: 910, y: 165 }, { x: 930, y: 75 }, { x: 1160, y: 225 },
+          { x: 490, y: 260 }, { x: 490, y: 520 }, { x: 800, y: 520 }, { x: 810, y: 265 }, { x: 1030, y: 260 }, { x: 1130, y: 505 },
+          { x: 430, y: 635 }, { x: 560, y: 470 }, { x: 660, y: 675 }, { x: 1010, y: 675 }, { x: 1040, y: 465 }
+        ]
       },
+
+      // --------------------------------------------------------------
+      // SECTOR 05: EPSILON
+      // --------------------------------------------------------------
       {
         id: 5,
-        title: "SOLAR FLARE IMPACT: SECTOR 05",
-        desc: "Shield deflection overloaded! Hull heating peaked at +40°C. Find +40°C on the chart and turn physical knobs to suppress fire hazard.",
-        temp: 40,
-        targets: { O: 15, N: 45, C: 25 }
+        code: "SECTOR 05 [EPSILON]",
+        desc: "Choke-Point Hub: High-density multi-stage bifurcations with decoy loops.",
+        targets: { O: 40, N: 40, C: 40 },
+        nodes: {
+          START: { x: 90, y: 350, label: "START", sub: "CORE", type: "start" },
+          O: { x: 1310, y: 110, label: "NODE O", sub: "CYAN", type: "endO" },
+          N: { x: 1310, y: 350, label: "NODE N", sub: "YELLOW", type: "endN" },
+          C: { x: 1310, y: 590, label: "NODE C", sub: "ROSE", type: "endC" }
+        },
+        segments: [
+          [[90, 350], [190, 350], [300, 205], [490, 205], [590, 105], [880, 105], [1000, 200], [1160, 200], [1230, 110], [1310, 110]],
+          [[190, 350], [370, 350], [460, 280], [690, 280], [800, 350], [1010, 350], [1110, 280], [1240, 280], [1270, 350], [1310, 350]],
+          [[190, 350], [300, 505], [530, 505], [630, 610], [940, 610], [1040, 520], [1230, 520], [1270, 590], [1310, 590]],
+          [[490, 205], [490, 290], [590, 290]],
+          [[590, 105], [590, 45]],
+          [[880, 105], [970, 105], [970, 45]],
+          [[1000, 200], [1000, 290]],
+          [[1160, 200], [1160, 95]],
+          [[370, 350], [370, 430], [450, 430]],
+          [[460, 280], [460, 195]],
+          [[690, 280], [690, 200]],
+          [[800, 350], [800, 435], [910, 435]],
+          [[1010, 350], [1010, 435]],
+          [[1110, 280], [1110, 195]],
+          [[1240, 280], [1240, 195]],
+          [[300, 505], [300, 600], [400, 600]],
+          [[530, 505], [530, 415]],
+          [[630, 610], [630, 675]],
+          [[940, 610], [1020, 610], [1020, 675]],
+          [[1040, 520], [1040, 435]],
+          [[1230, 520], [1230, 435]]
+        ],
+        valves: [
+          { x: 395, y: 205, val: 15 },
+          { x: 735, y: 105, val: 15 },
+          { x: 1080, y: 200, val: 10 },
+          { x: 280, y: 350, val: 10 },
+          { x: 575, y: 280, val: 15 },
+          { x: 905, y: 350, val: 15 },
+          { x: 415, y: 505, val: 10 },
+          { x: 785, y: 610, val: 20 },
+          { x: 1135, y: 520, val: 10 },
+          { x: 490, y: 245, val: 10 },
+          { x: 925, y: 105, val: 15 },
+          { x: 405, y: 430, val: 10 },
+          { x: 850, y: 435, val: 15 },
+          { x: 345, y: 600, val: 15 },
+          { x: 1160, y: 150, val: 10 }
+        ],
+        gates: [
+          { x: 590, y: 290 },
+          { x: 590, y: 45 },
+          { x: 970, y: 45 },
+          { x: 1000, y: 290 },
+          { x: 1160, y: 95 },
+          { x: 450, y: 430 },
+          { x: 460, y: 195 },
+          { x: 690, y: 200 },
+          { x: 910, y: 435 },
+          { x: 1010, y: 435 },
+          { x: 1110, y: 195 },
+          { x: 1240, y: 195 },
+          { x: 400, y: 600 },
+          { x: 530, y: 415 },
+          { x: 630, y: 675 },
+          { x: 1020, y: 675 },
+          { x: 1040, y: 435 },
+          { x: 1230, y: 435 }
+        ]
       }
     ];
 
-    // Curve Functions: Perfectly hit (O, N, C) targets at every dataset point
-    // X range: -50 to +50. Y range: 0 to 50
-    function curveO(t) {
-      // Linear downward slope: (-40 -> 45), (40 -> 15)
-      return 30 - 0.375 * t;
-    }
-
-    function curveN(t) {
-      // Linear upward slope: (-40 -> 15), (40 -> 45)
-      return 25 + 0.375 * t;
-    }
-
-    function curveC(t) {
-      // Upward parabola: vertex (0, 10), (±20 -> 15), (±40 -> 25)
-      return 10 + 0.009375 * (t * t);
-    }
-
     // ------------------------------------------------------------------
-    // 2. STATE MANAGEMENT
+    // 2. STATE & AUDIO SYNTHESIS
     // ------------------------------------------------------------------
-    let activeQuestion = null;
-    let lastQuestionIdx = -1;
+    let currentMazeIdx = 0;
     let inputs = { O: 0, N: 0, C: 0 };
     let isTaskActive = false;
     let isSolved = false;
 
-    let holdDuration = 0;
-    const REQUIRED_HOLD = 1500; // 1.5 seconds hold
-    let lastFrameTime = performance.now();
-
-    let timeLeft = 60;
+    let timeLeft = 90;
     let timerInterval = null;
 
-    // Web Audio Synthesizer for Sirens & Win Fanfare
     let audioCtx = null;
     let sirenOsc = null;
     let sirenGain = null;
@@ -607,20 +798,17 @@
     }
 
     function playSiren() {
-      if (!audioCtx) return;
-      if (sirenOsc) return;
-
+      if (!audioCtx || sirenOsc) return;
       sirenOsc = audioCtx.createOscillator();
       sirenGain = audioCtx.createGain();
       sirenOsc.type = "sawtooth";
       sirenOsc.frequency.setValueAtTime(440, audioCtx.currentTime);
-      sirenGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      sirenGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
 
-      // Wobble alarm frequency
       const lfo = audioCtx.createOscillator();
       const lfoGain = audioCtx.createGain();
       lfo.frequency.value = 1.5;
-      lfoGain.gain.value = 120;
+      lfoGain.gain.value = 140;
       lfo.connect(sirenOsc.frequency);
       lfo.start();
 
@@ -646,7 +834,7 @@
         const g = audioCtx.createGain();
         osc.type = "sine";
         osc.frequency.value = freq;
-        g.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.12);
+        g.gain.setValueAtTime(0.08, audioCtx.currentTime + i * 0.12);
         g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.4);
         osc.connect(g);
         g.connect(audioCtx.destination);
@@ -656,138 +844,130 @@
     }
 
     // ------------------------------------------------------------------
-    // 3. NOMOGRAM RENDERER (Clean Ticks, Multiples of 5, Anchor Rings)
+    // 3. CANVAS MAZE VECTOR RENDERING
     // ------------------------------------------------------------------
-    const canvas = document.getElementById("nomogramCanvas");
+    const canvas = document.getElementById("mazeCanvas");
     const ctx = canvas.getContext("2d");
 
-    const PAD_LEFT = 55;
-    const PAD_RIGHT = 30;
-    const PAD_TOP = 25;
-    const PAD_BOTTOM = 45;
-
-    function toCanvasX(temp) {
-      // temp: -50 to +50
-      const plotW = canvas.width - PAD_LEFT - PAD_RIGHT;
-      return PAD_LEFT + ((temp - (-50)) / 100) * plotW;
-    }
-
-    function toCanvasY(val) {
-      // val: 0 to 50
-      const plotH = canvas.height - PAD_TOP - PAD_BOTTOM;
-      return canvas.height - PAD_BOTTOM - (val / 50) * plotH;
-    }
-
-    function renderNomogram() {
+    function renderLabyrinth() {
+      const maze = LABYRINTHS[currentMazeIdx];
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const plotW = canvas.width - PAD_LEFT - PAD_RIGHT;
-      const plotH = canvas.height - PAD_TOP - PAD_BOTTOM;
-
-      // Inner background
-      ctx.fillStyle = "#090d14";
-      ctx.fillRect(PAD_LEFT, PAD_TOP, plotW, plotH);
-
-      // Horizontal Grid Lines & Y-Axis Labels (Every 5 units: 0, 5, 10, ... 50)
-      ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      ctx.font = "bold 11px Courier New";
-
-      for (let yVal = 0; yVal <= 50; yVal += 5) {
-        const py = toCanvasY(yVal);
-        const isMajor = (yVal % 10 === 0);
-
-        ctx.strokeStyle = isMajor ? "rgba(71, 85, 105, 0.4)" : "rgba(51, 65, 85, 0.2)";
-        ctx.lineWidth = isMajor ? 1.5 : 1;
-
-        ctx.beginPath();
-        ctx.moveTo(PAD_LEFT, py);
-        ctx.lineTo(canvas.width - PAD_RIGHT, py);
-        ctx.stroke();
-
-        ctx.fillStyle = isMajor ? "#cbd5e1" : "#64748b";
-        ctx.fillText(yVal.toString(), PAD_LEFT - 10, py);
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
       }
 
-      // Vertical Grid Lines & X-Axis Labels (Every 10°C from -50 to +50)
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-
-      for (let t = -50; t <= 50; t += 5) {
-        const px = toCanvasX(t);
-        const isMajor = (t % 10 === 0);
-
-        ctx.strokeStyle = isMajor ? "rgba(71, 85, 105, 0.4)" : "rgba(51, 65, 85, 0.2)";
-        ctx.lineWidth = isMajor ? 1.5 : 1;
-
+      // Draw Pipe Segments
+      maze.segments.forEach(poly => {
+        ctx.strokeStyle = "#1a2538";
+        ctx.lineWidth = 13;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
         ctx.beginPath();
-        ctx.moveTo(px, PAD_TOP);
-        ctx.lineTo(px, canvas.height - PAD_BOTTOM);
+        poly.forEach((pt, i) => {
+          if (i === 0) ctx.moveTo(pt[0], pt[1]);
+          else ctx.lineTo(pt[0], pt[1]);
+        });
         ctx.stroke();
 
-        if (isMajor) {
-          ctx.fillStyle = "#cbd5e1";
-          ctx.fillText((t > 0 ? "+" + t : t) + "°", px, canvas.height - PAD_BOTTOM + 8);
-        }
-      }
+        ctx.strokeStyle = "#0b121e";
+        ctx.lineWidth = 7;
+        ctx.stroke();
 
-      // Axis Borders
-      ctx.strokeStyle = "#475569";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(PAD_LEFT, PAD_TOP, plotW, plotH);
-
-      // Plot the Three Distinct System Curves
-      plotCurve(curveO, "#38bdf8"); // Cyan (O2)
-      plotCurve(curveN, "#facc15"); // Yellow (N2)
-      plotCurve(curveC, "#fb7185"); // Rose (CO2)
-
-      // Plot Calibrated Intersection Anchor Rings (Multiples of 5)
-      const testTemps = [-40, -20, 0, 20, 40];
-      testTemps.forEach(t => {
-        drawAnchorRing(toCanvasX(t), toCanvasY(curveO(t)), "#38bdf8");
-        drawAnchorRing(toCanvasX(t), toCanvasY(curveN(t)), "#facc15");
-        drawAnchorRing(toCanvasX(t), toCanvasY(curveC(t)), "#fb7185");
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
       });
-    }
 
-    function plotCurve(formula, strokeColor) {
-      ctx.save();
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = 3.5;
-      ctx.shadowColor = strokeColor;
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
+      // Draw Flow Coins
+      maze.valves.forEach(v => {
+        ctx.save();
+        ctx.fillStyle = "#0c1524";
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, 12.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
 
-      for (let t = -50; t <= 50; t += 1) {
-        const cx = toCanvasX(t);
-        const cy = toCanvasY(formula(t));
-        if (t === -50) ctx.moveTo(cx, cy);
-        else ctx.lineTo(cx, cy);
+        ctx.fillStyle = "#f8fafc";
+        ctx.font = "bold 11px Consolas, monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(v.val.toString(), v.x, v.y);
+        ctx.restore();
+      });
+
+      // Draw Sealed Gates (X)
+      maze.gates.forEach(g => {
+        ctx.save();
+        ctx.fillStyle = "#380a0a";
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.rect(g.x - 10, g.y - 10, 20, 20);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = "#fca5a5";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(g.x - 5.5, g.y - 5.5);
+        ctx.lineTo(g.x + 5.5, g.y + 5.5);
+        ctx.moveTo(g.x + 5.5, g.y - 5.5);
+        ctx.lineTo(g.x - 5.5, g.y + 5.5);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // Draw Nodes
+      for (const k in maze.nodes) {
+        const n = maze.nodes[k];
+        ctx.save();
+
+        let border = "#38bdf8", fill = "rgba(8, 47, 73, 0.9)", text = "#38bdf8";
+        if (n.type === "start") { border = "#22c55e"; fill = "rgba(6, 78, 59, 0.9)"; text = "#4ade80"; }
+        if (n.type === "endN")  { border = "#facc15"; fill = "rgba(66, 32, 6, 0.9)"; text = "#fef08a"; }
+        if (n.type === "endC")  { border = "#fb7185"; fill = "rgba(76, 5, 25, 0.9)"; text = "#fecdd3"; }
+
+        ctx.shadowColor = border;
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = fill;
+        ctx.strokeStyle = border;
+        ctx.lineWidth = 2.2;
+
+        const w = 82, h = 38;
+        ctx.beginPath();
+        ctx.roundRect(n.x - w / 2, n.y - h / 2, w, h, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = text;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "bold 11px Consolas, monospace";
+        ctx.fillText(n.label, n.x, n.y - 5);
+        ctx.font = "9px sans-serif";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.fillText(n.sub, n.x, n.y + 8);
+
+        ctx.restore();
       }
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    function drawAnchorRing(cx, cy, color) {
-      ctx.save();
-      ctx.strokeStyle = color;
-      ctx.fillStyle = "#07090e";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
     }
 
     // ------------------------------------------------------------------
-    // 4. DIAL UPDATES (-135° to +135° Needle Sweep for 0 to 50)
+    // 4. DIALS & REAL-TIME VERIFICATION
     // ------------------------------------------------------------------
-    function updateDialNeedle(pivotId, valDisplayId, value) {
-      // 0 maps to -135deg, 50 maps to +135deg
-      const angle = -135 + (value / 50) * 270;
-      document.getElementById(pivotId).style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-      document.getElementById(valDisplayId).textContent = Math.round(value);
+    function updateNeedle(needleId, valId, value) {
+      const deg = -135 + (value / 50) * 270;
+      document.getElementById(needleId).style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
+      document.getElementById(valId).textContent = Math.round(value);
     }
 
     function setDialInputs(o, n, c) {
@@ -795,57 +975,62 @@
       inputs.N = Math.max(0, Math.min(50, n));
       inputs.C = Math.max(0, Math.min(50, c));
 
-      updateDialNeedle("pivotO", "valO", inputs.O);
-      updateDialNeedle("pivotN", "valN", inputs.N);
-      updateDialNeedle("pivotC", "valC", inputs.C);
+      updateNeedle("needleO", "valO", inputs.O);
+      updateNeedle("needleN", "valN", inputs.N);
+      updateNeedle("needleC", "valC", inputs.C);
 
-      // Synchronize sliders
-      document.getElementById("simSliderO").value = inputs.O;
-      document.getElementById("simSliderN").value = inputs.N;
-      document.getElementById("simSliderC").value = inputs.C;
+      document.getElementById("sliderO").value = inputs.O;
+      document.getElementById("sliderN").value = inputs.N;
+      document.getElementById("sliderC").value = inputs.C;
+
+      checkInstantWin();
+    }
+
+    function checkInstantWin() {
+      if (!isTaskActive || isSolved) return;
+      const t = LABYRINTHS[currentMazeIdx].targets;
+
+      const okO = Math.abs(inputs.O - t.O) <= 1;
+      const okN = Math.abs(inputs.N - t.N) <= 1;
+      const okC = Math.abs(inputs.C - t.C) <= 1;
+
+      if (okO && okN && okC) {
+        triggerVictory();
+      }
     }
 
     // ------------------------------------------------------------------
-    // 5. TASK LOGIC & HARMONIC STABILIZATION
+    // 5. TASK LIFECYCLE & PACKET PROTOCOL
     // ------------------------------------------------------------------
-    function pickRandomTask() {
-      let idx;
-      do {
-        idx = Math.floor(Math.random() * NOMOGRAM_DATASET.length);
-      } while (idx === lastQuestionIdx && NOMOGRAM_DATASET.length > 1);
-      lastQuestionIdx = idx;
-      return NOMOGRAM_DATASET[idx];
+    function loadLabyrinth(idx) {
+      currentMazeIdx = (idx + LABYRINTHS.length) % LABYRINTHS.length;
+      const m = LABYRINTHS[currentMazeIdx];
+
+      document.getElementById("sectorCode").textContent = m.code;
+      document.getElementById("mazeName").textContent = `${m.code} - ${m.desc}`;
+      renderLabyrinth();
+      checkInstantWin();
     }
 
     function startTask() {
       initAudio();
-      activeQuestion = pickRandomTask();
       isTaskActive = true;
       isSolved = false;
-      holdDuration = 0;
 
-      // Update UI Briefing
-      document.getElementById("scenarioTitle").textContent = activeQuestion.title;
-      document.getElementById("scenarioDesc").textContent = activeQuestion.desc;
-      document.getElementById("targetTempVal").textContent = (activeQuestion.temp > 0 ? "+" : "") + activeQuestion.temp + "°C";
+      const overlay = document.getElementById("statusOverlay");
+      overlay.classList.remove("active", "failed");
 
-      // Reset Banners & Overlay
-      const banner = document.getElementById("alertBanner");
-      banner.style.background = "#380808";
-      banner.style.borderColor = "var(--red)";
-      banner.style.color = "var(--red)";
-      banner.textContent = "CRITICAL SABOTAGE: Oxygen Level of spaceship is breaching";
-
-      document.getElementById("winOverlay").classList.remove("active");
-
-      // Reset Countdown
       clearInterval(timerInterval);
-      timeLeft = 60;
-      document.getElementById("timerBadge").textContent = `TIME: ${timeLeft}s`;
+      timeLeft = 90;
+      const tBadge = document.getElementById("timerBadge");
+      tBadge.classList.remove("critical");
+      tBadge.textContent = `TIME: ${timeLeft}s`;
+
       timerInterval = setInterval(() => {
         if (!isSolved && isTaskActive) {
           timeLeft--;
-          document.getElementById("timerBadge").textContent = `TIME: ${timeLeft}s`;
+          tBadge.textContent = `TIME: ${timeLeft}s`;
+          if (timeLeft <= 20) tBadge.classList.add("critical");
           if (timeLeft <= 0) {
             clearInterval(timerInterval);
             triggerFailure();
@@ -854,14 +1039,18 @@
       }, 1000);
 
       playSiren();
-      renderNomogram();
+      renderLabyrinth();
+      checkInstantWin();
     }
 
     function triggerFailure() {
       stopSiren();
       isTaskActive = false;
-      const banner = document.getElementById("alertBanner");
-      banner.textContent = "CRITICAL FAILURE: OXYGEN DEPLETED - SPACESHIP BREACHED";
+      sendSerialPacket("FAILED\n");
+
+      const overlay = document.getElementById("statusOverlay");
+      overlay.classList.add("active", "failed");
+      document.getElementById("overlayTitle").textContent = "TASK FAILED - PRESSURE LOST";
     }
 
     function triggerVictory() {
@@ -870,50 +1059,19 @@
       clearInterval(timerInterval);
       playWinSound();
 
-      const banner = document.getElementById("alertBanner");
-      banner.style.background = "#064e3b";
-      banner.style.borderColor = "var(--green)";
-      banner.style.color = "var(--green)";
-      banner.textContent = "TASK COMPLETED: LIFE SUPPORT ATMOSPHERE STABILIZED";
+      sendSerialPacket("SUCCESS\n");
 
-      document.getElementById("winOverlay").classList.add("active");
-    }
-
-    // Main Evaluation Loop
-    function gameLoop(now) {
-      const dt = now - lastFrameTime;
-      lastFrameTime = now;
-
-      if (isTaskActive && activeQuestion && !isSolved) {
-        // Evaluate all 3 knobs simultaneously within +/- 1 unit tolerance
-        const matchO = Math.abs(inputs.O - activeQuestion.targets.O) <= 1;
-        const matchN = Math.abs(inputs.N - activeQuestion.targets.N) <= 1;
-        const matchC = Math.abs(inputs.C - activeQuestion.targets.C) <= 1;
-
-        if (matchO && matchN && matchC) {
-          holdDuration += dt;
-          if (holdDuration >= REQUIRED_HOLD) {
-            triggerVictory();
-          }
-        } else {
-          // Drain hold meter when any knob falls out of tolerance
-          holdDuration = Math.max(0, holdDuration - dt * 2.5);
-        }
-
-        const pct = Math.min(100, (holdDuration / REQUIRED_HOLD) * 100);
-        document.getElementById("holdFill").style.width = pct + "%";
-        document.getElementById("holdSec").textContent = (holdDuration / 1000).toFixed(1);
-      }
-
-      requestAnimationFrame(gameLoop);
+      const overlay = document.getElementById("statusOverlay");
+      overlay.classList.add("active");
+      document.getElementById("overlayTitle").textContent = "TASK COMPLETED";
     }
 
     // ------------------------------------------------------------------
-    // 6. HARDWARE WEB SERIAL INTEGRATION (Ready for ESP32)
+    // 6. HARDWARE WEB SERIAL WITH PACKET PROTOCOL
     // ------------------------------------------------------------------
     let serialPort = null;
-    let serialReader = null;
-    let rxAccumulator = "";
+    let serialWriter = null;
+    let rxBuffer = "";
 
     async function connectWebSerial() {
       initAudio();
@@ -921,72 +1079,87 @@
         serialPort = await navigator.serial.requestPort();
         await serialPort.open({ baudRate: 115200 });
 
-        document.getElementById("connStatus").className = "status-badge status-connected";
-        document.getElementById("connStatus").textContent = "ESP32 CONNECTED (115200)";
+        const textEncoder = new TextEncoderStream();
+        textEncoder.readable.pipeTo(serialPort.writable);
+        serialWriter = textEncoder.writable.getWriter();
+
+        document.getElementById("connectBtn").textContent = "ESP32 ONLINE";
         document.getElementById("connectBtn").disabled = true;
 
-        readSerialStream();
-      } catch (err) {
-        console.warn("Serial connection canceled or failed:", err);
-      }
-    }
+        const textDecoder = new TextDecoderStream();
+        serialPort.readable.pipeTo(textDecoder.writable);
+        const reader = textDecoder.readable.getReader();
 
-    async function readSerialStream() {
-      const textDecoder = new TextDecoderStream();
-      serialPort.readable.pipeTo(textDecoder.writable);
-      serialReader = textDecoder.readable.getReader();
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) {
+            rxBuffer += value;
+            const lines = rxBuffer.split("\n");
+            rxBuffer = lines.pop();
 
-      while (true) {
-        const { value, done } = await serialReader.read();
-        if (done) break;
-        if (value) {
-          rxAccumulator += value;
-          const lines = rxAccumulator.split("\n");
-          rxAccumulator = lines.pop(); // Preserve incomplete chunk
-
-          for (const line of lines) {
-            parseHardwareLine(line.trim());
+            for (const line of lines) {
+              const clean = line.trim();
+              if (clean === "SUCCESS") {
+                loadLabyrinth(currentMazeIdx + 1);
+                startTask();
+              } else {
+                const parts = clean.split(",").map(Number);
+                if (parts.length === 3 && !parts.some(isNaN)) {
+                  setDialInputs(parts[0], parts[1], parts[2]);
+                }
+              }
+            }
           }
         }
+      } catch (err) {
+        console.warn("Serial error:", err);
       }
     }
 
-    function parseHardwareLine(line) {
-      if (!line) return;
-      // Expecting CSV format: "valO,valN,valC" (0-50 mapped)
-      const parts = line.split(",").map(Number);
-      if (parts.length === 3 && !parts.some(isNaN)) {
-        setDialInputs(parts[0], parts[1], parts[2]);
+    async function sendSerialPacket(packet) {
+      if (serialWriter) {
+        try {
+          await serialWriter.write(packet);
+        } catch (e) {
+          console.warn("Error sending packet to ESP32:", e);
+        }
       }
     }
 
     // ------------------------------------------------------------------
     // 7. EVENT LISTENERS
     // ------------------------------------------------------------------
-    document.getElementById("startBtn").addEventListener("click", startTask);
-    document.getElementById("nextBtn").addEventListener("click", startTask);
+    document.getElementById("startBtn").addEventListener("click", () => {
+      startTask();
+    });
+
+    document.getElementById("cycleBtn").addEventListener("click", () => {
+      loadLabyrinth(currentMazeIdx + 1);
+    });
+
+    document.getElementById("nextSectorBtn").addEventListener("click", () => {
+      loadLabyrinth(currentMazeIdx + 1);
+      startTask();
+    });
+
     document.getElementById("connectBtn").addEventListener("click", connectWebSerial);
 
-    // Fallback Simulator Slider Events
-    document.getElementById("simSliderO").addEventListener("input", (e) => {
+    document.getElementById("sliderO").addEventListener("input", (e) => {
       setDialInputs(parseFloat(e.target.value), inputs.N, inputs.C);
     });
-    document.getElementById("simSliderN").addEventListener("input", (e) => {
+    document.getElementById("sliderN").addEventListener("input", (e) => {
       setDialInputs(inputs.O, parseFloat(e.target.value), inputs.C);
     });
-    document.getElementById("simSliderC").addEventListener("input", (e) => {
+    document.getElementById("sliderC").addEventListener("input", (e) => {
       setDialInputs(inputs.O, inputs.N, parseFloat(e.target.value));
     });
 
-    // Window Resize Redraw
-    window.addEventListener("resize", () => {
-      renderNomogram();
-    });
+    window.addEventListener("resize", renderLabyrinth);
 
-    // Initialize View
-    renderNomogram();
+    // Initial load
+    loadLabyrinth(0);
     setDialInputs(0, 0, 0);
-    requestAnimationFrame(gameLoop);
   </script>
 </body>
 </html>

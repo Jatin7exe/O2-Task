@@ -1054,6 +1054,9 @@
     }
 
     function triggerVictory() {
+      if (!isTaskActive || isSolved) {
+        return;
+      }
       isSolved = true;
       isTaskActive = false;
       clearInterval(timerInterval);
@@ -1073,51 +1076,131 @@
     let serialWriter = null;
     let rxBuffer = "";
 
-    async function connectWebSerial() {
+    let serialConnected = false;
+
+    let boardTaskStarted = false;
+
+    function processSerialLine(line) {
+        if (!line) {
+          return;
+        }
+
+        const clean = line.trim();
+        const command = clean.toUpperCase();
+
+        if (
+          command === "START" ||
+          command === "OXYGEN_START"
+        ) {
+          console.log(
+            "ESP32 started oxygen sabotage."
+          );
+
+          boardTaskStarted = true;
+          loadLabyrinth(currentMazeIdx);
+
+          startTask();
+
+          return;
+        }
+
+        const parts =
+          clean.split(",").map(Number);
+
+        if (
+          parts.length === 3 &&
+          !parts.some(isNaN)
+        ) {
+          setDialInputs(
+            parts[0],
+            parts[1],
+            parts[2]
+          );
+
+          return;
+        }
+
+        console.log(
+          "ESP32 serial message:",
+          clean
+        );
+      }
+
+    async function connectWebSerial(manual = false) {
       initAudio();
+
       try {
-        serialPort = await navigator.serial.requestPort();
-        await serialPort.open({ baudRate: 115200 });
+        let ports = await navigator.serial.getPorts();
 
-        const textEncoder = new TextEncoderStream();
-        textEncoder.readable.pipeTo(serialPort.writable);
-        serialWriter = textEncoder.writable.getWriter();
+        if (ports.length === 0) {
+          if (!manual) {
+            console.log("No previously authorized ESP32 found.");
+            return false;
+          }
+          const requestedPort = await navigator.serial.requestPort();
+          ports = [requestedPort];
+        }
 
+        serialPort = ports[0];
+
+        await serialPort.open({
+          baudRate: 115200
+        });
+
+        serialConnected = true;
         document.getElementById("connectBtn").textContent = "ESP32 ONLINE";
         document.getElementById("connectBtn").disabled = true;
+
+        const textEncoder = new TextEncoderStream();
+
+        textEncoder.readable.pipeTo(serialPort.writable);
+        serialWriter = textEncoder.writable.getWriter();
 
         const textDecoder = new TextDecoderStream();
         serialPort.readable.pipeTo(textDecoder.writable);
         const reader = textDecoder.readable.getReader();
 
+
         while (true) {
           const { value, done } = await reader.read();
-          if (done) break;
-          if (value) {
-            rxBuffer += value;
-            const lines = rxBuffer.split("\n");
-            rxBuffer = lines.pop();
 
-            for (const line of lines) {
-              const clean = line.trim();
-              if (clean === "SUCCESS") {
-                loadLabyrinth(currentMazeIdx + 1);
-                startTask();
-              } else {
-                const parts = clean.split(",").map(Number);
-                if (parts.length === 3 && !parts.some(isNaN)) {
-                  setDialInputs(parts[0], parts[1], parts[2]);
-                }
-              }
-            }
+          if (done) break;
+          if (!value) continue;
+
+
+          rxBuffer += value;
+
+          const lines = rxBuffer.split("\n");
+
+          rxBuffer = lines.pop();
+
+
+          for (const line of lines) {
+            processSerialLine(line.trim());
           }
         }
+
       } catch (err) {
+        serialConnected = false;
         console.warn("Serial error:", err);
       }
     }
 
     async function sendSerialPacket(packet) {
+      if (!serialWriter) {
+        console.warn(
+          "Cannot send packet: ESP32 is not connected."
+        );
+        return false;
+      }
+
+      if (!boardTaskStarted) {
+        console.warn(
+          "Cannot send packet: sabotage has not started."
+        );
+        return false;
+      }
+
       if (serialWriter) {
         try {
           await serialWriter.write(packet);
@@ -1143,7 +1226,7 @@
       startTask();
     });
 
-    document.getElementById("connectBtn").addEventListener("click", connectWebSerial);
+    document.getElementById("connectBtn").addEventListener("click", () => connectWebSerial(true));
 
     document.getElementById("sliderO").addEventListener("input", (e) => {
       setDialInputs(parseFloat(e.target.value), inputs.N, inputs.C);
@@ -1160,6 +1243,7 @@
     // Initial load
     loadLabyrinth(0);
     setDialInputs(0, 0, 0);
+    if ("serial" in navigator) connectWebSerial(false);
   </script>
 </body>
 </html>
